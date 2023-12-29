@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>multipart test</title>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js'
+        integrity='sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=='
+        crossorigin='anonymous'></script>    
+</head>
+
+<body>
+<!-- <a href="" id="a">click here to download your file</a> -->
+</body>
+<script>
+
+    function download(value, name, type) {
+    var file = new Blob([value], {type: type});
+    var a = document.createElement("a");  
+    document.body.appendChild(a);
+    a.href = URL.createObjectURL(file);
+    a.download = name;
+    a.click();
+        
+}
+
+    var a,b;
+    fetch("/mp?ajax=1", {method:"GET"})
+    .then(res => res.formData())
+    .then(fd => {
+//         b=fd;
+//         console.log(fd)
+        const msg = JSON.parse(fd.get('msg'));
+        const success = msg['success'];
+        if(success==1){
+            const file =fd.get('file');  
+            b=file;
+            Promise.resolve(file.arrayBuffer()).then(value=> download(value,file.name,file.type))
+        }else{
+            console.log( msg['err']);
+        };
+        
+        
+//     for (let [k, v] of fd) {
+//         
+//     }
+    })
+</script>
+</html>

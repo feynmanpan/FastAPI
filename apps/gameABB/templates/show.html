@@ -1,0 +1,582 @@
+<html>
+
+{% if ajax == 0 %}
+
+<head>
+    <meta charset="utf-8">
+    <title>對戰1A2B!!!</title>
+    <link rel="icon" type="image/x-icon" href="/static/fastapi.svg">
+
+    <!--  -->
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js'
+        integrity='sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=='
+        crossorigin='anonymous'></script>
+    <!--  -->
+    <style>
+        body {
+            font-family: 微軟正黑體;
+            background-image: url('/static/img31.jpg');
+/*             background-image: url('/static/sasso.jpg'); */
+            background-repeat: no-repeat;
+/*             background-size: auto 100%; */
+            background-size: cover;
+            background-position: center;
+/*             opacity: 0.5; */
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        .left {
+            text-align: left;
+        }
+
+        .mp {
+            margin: 0;
+            margin-top: 10px;
+        }
+
+        .card {
+            background-color: lightpink;
+            margin: 0 auto;
+            margin-left: 5px;
+            margin-right: 5px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            padding: 10px;
+            /* padding-top: 0px; */
+/*             width: 200px; */
+            border-radius: 10px;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            box-shadow: 0 3px 6px 0 rgb(32 33 36 / 88%);
+/*             box-shadow: 0 3px 6px 0 rgb(232 233 236 / 100%); */
+        }
+
+
+
+        .btn {
+            cursor: pointer;
+            border: 0px solid;
+            font-size: 17px;
+            padding: 4px;
+            padding-left: 10px;
+            padding-right: 10px;
+            background-color: darkcyan;
+            border-radius: 3px;
+            display: inline-block;
+            color: white;
+            opacity: 1;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            opacity: 1;
+        }
+
+        .new,
+        .stopgame {
+            background-color: crimson;
+        }
+
+        .stopwaiting {
+            /* border: 1px solid; */
+            font-size: 17px;
+            padding: 4px;
+            padding-left: 10px;
+            padding-right: 10px;
+            /* margin-top: 10px; */
+            background-color: darkcyan;
+            border-radius: 3px;
+            display: inline-block;
+            color: white;
+        }
+
+        .waittitle {
+            font-weight: bold;
+            font-size: xx-large;
+        }
+
+        .banner {
+            color: inherit;
+            text-decoration: inherit;
+            background: -webkit-gradient(linear, left top, right top, from(#ff8a00), to(#da1b60));
+            background: linear-gradient(to right, #ff8a00, #da1b60);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            -webkit-box-decoration-break: clone;
+            box-decoration-break: clone;
+            text-shadow: none;
+            font-weight: 700;
+            font-size:1.5em;
+        }
+
+        .red {
+            color: red;
+            border: 1px solid black;
+            padding: 1px;
+        }
+
+        .blue {
+            color: blue;
+            border: 1px solid black;
+            padding: 1px;
+        }
+
+        .U {
+            border-bottom: 2px solid black;
+        }
+
+        .U2 {
+            border-bottom: 1.5px solid crimson;
+            margin-bottom: 7px;
+        }
+
+        .p1name {
+            font-weight: bolder;
+            font-size: large;
+        }
+
+        .result {
+            display: inline-block;
+            border: 0px solid black;
+            width: 200px;
+            height: 300px;
+            vertical-align: top;
+            overflow-y: scroll;
+            overflow-x: hidden;
+            margin-bottom: 10px;
+            background-color: white;
+        }
+
+        .guess {
+            display: none;
+        }
+
+        #compare .guess:first-child {
+            color: #da1b60;
+        }
+
+        #hiscompare .guess:first-child {
+            color: #da1b60;
+        }
+
+        .block {
+            display: block;
+        }
+
+        #infoarea {
+            display: none;
+        }
+    </style>
+
+</head>
+{% endif %}
+
+<body>
+    {% if ajax == 0 %}
+    <h2 class="center"><span class="banner">對戰 1A2B !!!</span></h2>
+    <h2 class="center">
+        <span class="red">A</span>代表<span class="U">數字</span>及<span class="U">位置</span>皆正確，
+        <span class='blue'>B</span>代表僅<span class="U">數字</span>正確
+    </h2>
+    <p style='text-align:center'>【AI採正常邏輯的暴力排除法，約7次內猜出，非作弊】</p>
+    {% endif %}
+    <!-- ############################################## -->
+    <div id="main">
+        <!-- ================== new/join ============================ -->
+        {% if not I.isPlayer %}
+        <!-- p1 new game -->
+        <div class="center" id="{{I.const.newgame}}" style="margin-bottom:10px">
+            <div class="{{I.const.card}} left" id="">
+                <span class="block">你的暱稱:
+                    <input class='pname' type="text" placeholder="1-10位英數字元" maxlength="10" size="10"
+                        autocomplete="off">
+                </span>
+                <span class="block">你的答案:
+                    <input class='ans' type="text" placeholder="4位相異數字" maxlength="4" size="10" autocomplete="off">
+                </span>
+                <!--  -->
+                <p class="center mp">
+                    <input type="submit" value="👌🏻 New Game! " title='開局!' class="btn new">
+                </p>
+            </div>
+        </div>
+        <!-- p2 join game -->
+        <div class="center" id="{{I.const.joingame}}">
+            {% for g in I.GAME.games.values() %}
+            {% if g.p2 == None %}
+            <div class="{{I.const.card}} left" id="{{g.gid}}" data-start="{{g.start}}"
+                data-dmax="{{g.durationMax+g.cleanGamesCycle}}">
+                <div class="U2">對手: <span class="p1name">{{g.p1.pname}}</span></div>
+                <span class="block">你的暱稱:
+                    <input class='pname' type="text" placeholder="1-10位英數字元" maxlength="10" size="10"
+                        autocomplete="off">
+                </span>
+                <span class="block">你的答案:
+                    <input class='ans' type="text" placeholder="4位相異數字" maxlength="4" size="10" autocomplete="off">
+                </span>
+                <!--  -->
+                <p class="center mp">
+                    <input type="submit" value="🤟🏻 Join Game " title='參戰!' class="btn join">
+                    <span class="{{I.const.leftsec}}">{{g.durationMax+g.cleanGamesCycle}}</span>
+                    <span>秒</span>
+                    <!-- leftsec中間要有空格 -->
+                </p>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        {% else %}
+        <!-- ================== p1/p12 ============================ -->
+        {% if I.game.p2 == None %}
+        <!-- p1等待畫面 -->
+        <div class="center" id="{{I.const.p1waiting}}">
+            <div class="{{I.const.card}}" id="{{I.gid}}" data-start="{{I.game.start}}"
+                data-dmax="{{I.game.durationMax+I.game.cleanGamesCycle}}">
+                <span class="block">暱稱 {{I.pname}} / 答案 {{I.ans}}</span>
+                <span class="waittitle">p\ 等待對手 /q</span>
+                <!--  -->
+                <p class="center mp">
+                    <input type="submit" value="😲 Cancel? " title='停止等待對手' class="btn stopwaiting"
+                        data-papa="{{I.const.p1waiting}}">
+                    <span class="{{I.const.leftsec}}">{{I.game.durationMax+I.game.cleanGamesCycle}}</span>
+                    <span>秒</span>
+                </p>
+                <!-- leftsec中間要有空格 -->
+            </div>
+        </div>
+        {% else %}
+        <!-- p1,p2 對戰畫面 -->
+        <div class="center" id="{{I.const.p12vs}}">
+            <div class="{{I.const.card}} left" id="{{I.gid}}" data-start="{{I.game.start}}"
+                data-dmax="{{I.game.durationMax+I.game.cleanGamesCycle}}" data-hispname="{{I.he.pname}}">
+                <div class="U2">
+                    <span class="block">
+                        暱稱: <span class="p1name">{{I.pname}}</span>
+                    </span>
+                    <span class="block">
+                        答案: <span class="p1name">{{I.ans}}</span>
+                    </span>
+                </div>
+                <span>你猜對手的答案:
+                    <input class='ans' type="text" placeholder="4位相異數字" maxlength="4" size="10" autocomplete="off">
+                </span>
+                <!--  -->
+                <p class="center mp">
+                    <input type="submit" value="👁️‍🗨️ Check Ans! " title='提交' class="btn checkans">
+                    <span class="{{I.const.leftsec}}">{{I.game.durationMax+I.game.cleanGamesCycle}}</span>
+                    <span>秒</span>
+                </p>
+            </div>
+            <!--  -->
+            <div>
+                <div id="compare" class='result'>
+                    <span class="block">你猜的結果</span>
+                    <div class="histry">{{I.histry|safe}}</div>
+                </div>
+                <div id="hiscompare" class='result'>
+                    <span class="block"><span id="hisname">{{I.he.pname}}</span>猜的結果</span>
+                    <div class="histry">{{I.he.histry|safe}}</div>
+                </div>
+            </div>
+            <!--  -->
+            <input type="submit" value="😱 Cancel? " title='退出遊戲' class="btn stopgame" data-papa="{{I.const.p12vs}}">
+        </div>
+        {% endif %}
+        {% endif %}
+    </div>
+    <!-- ############################################## -->
+    <div id="{{I.const.infoarea}}">
+        <h4>info</h4>
+        <pre id="info">
+{{info}}
+        </pre>
+    </div>
+</body>
+
+<!--  -->
+{% if ajax == 0 %}
+<script>
+    // ------------------------------------------------------------------------
+    const constobj = JSON.parse('{{ I.constjson | safe }}');
+    let tmp1, tmp2;
+    let I = {};
+    let main = $('#' + constobj.main);
+    let infoarea = $('#' + constobj.infoarea);
+    // #################################################
+    let wsself = new WebSocket(constobj.DNS + "/" + constobj.wsself);
+    let wsgame = new WebSocket(constobj.DNS + "/" + constobj.wsgame);
+    // #################################################
+    function setCookie(key, value, expiry) {
+        var expires = new Date();
+        expires.setTime(expires.getTime() + (expiry * 24 * 60 * 60 * 1000));
+        document.cookie = key + '=' + value + ';expires=' + expires.toUTCString();
+    };
+    function getCookie(key) {
+        var keyValue = document.cookie.match('(^|;) ?' + key + '=([^;]*)(;|$)');
+        return (keyValue ? keyValue[2] : '').replaceAll('"', '').replaceAll("'", '');
+    };
+    //
+    function updateI(obj = { pid: "", pname: "", ans: "", gid: "" }) {
+        I.pid = getCookie(constobj.pid) || obj.pid;
+        I.pname = getCookie(constobj.pname) || obj.pname;
+        I.ans = getCookie(constobj.ans) || obj.ans;
+        I.gid = getCookie(constobj.gid) || obj.gid;
+        setCookie(constobj.pid, I.pid);
+        setCookie(constobj.pname, I.pname);
+        setCookie(constobj.ans, I.ans);
+        setCookie(constobj.gid, I.gid);
+    };
+    //
+    function gotoIndex(setcookienull = true, go = false) {
+        if (setcookienull == true) {
+            setCookie(constobj.pid, "");
+            setCookie(constobj.pname, "");
+            setCookie(constobj.ans, "");
+            setCookie(constobj.gid, "");
+            updateI();
+        };
+        //
+        if (go == true) {
+            window.location.href = "/ABB";
+        };
+    };
+    function getLeft(card) {
+        let left = 0;
+        if (card.length == 1) {
+            const dmax = parseInt(card.attr('data-dmax'));
+            if (dmax > 0.5) {
+                const start = card.attr('data-start');
+                const d = (Date.now() - Date.parse(start)) / 1000;
+                const tmp = parseInt(dmax - d); //剩餘可等待秒數
+                if (tmp > 0.5) {
+                    left = tmp;
+                };
+            };
+        };
+        //
+        return left
+    };
+    function papafadeout(that) {
+        let papa = $('#' + that.attr('data-papa'));
+        let card = papa.find('.' + constobj.card).eq(0);
+        card.attr('data-dmax', '0');
+        //
+        papa.children().fadeOut(constobj.wsgameCycle * 1000, function () {
+            //
+        });
+    };
+    function updateAllCardsLeftSec() {
+        $('.' + constobj.card).each(function () {
+            let card = $(this);
+            let papa = card.parent();
+            let leftsec = card.find('.' + constobj.leftsec).eq(0);
+            if (leftsec.length == 1) {
+                const left = getLeft(card);
+                leftsec.text(left <= 0 ? 0 : left);
+                if (left <= 0 && [constobj.p1waiting, constobj.p12vs].includes(papa.attr('id'))) {
+                    papafadeout(papa);
+                };
+            };
+        });
+    };
+    //
+    wsself.onmessage = function (e) {
+        const info = JSON.parse(e.data);
+        //
+        if (info.status == constobj.newjoin) {
+            const me = info.I;
+            if (me.isPlayer == true) {
+                updateI(me);
+                main.html(info.domstr_main);
+            } else {
+                alert(me.msg);
+            };
+            //
+            infoarea.html(info.domstr_infoarea);
+        } else if (info.status == constobj.checkans) {
+            let histry = $('#compare .histry').eq(0);
+            histry.prepend(info.result);
+            histry.children().eq(0).slideDown(function () {
+                $(this).css('display', 'block');
+            });
+        };
+    };
+    //
+    wsgame.onmessage = function (e) {
+        fchild = main.children().eq(0);
+        fname = fchild.attr('id');
+        domstr = e.data;
+        // new_join
+        if (fname == constobj.newgame) {
+            let joing1 = fchild.next();
+            const cond1 = domstr.includes(constobj.joingame) && !domstr.includes(constobj.newgame);
+            const cond2 = (domstr == constobj.default);
+            if (cond1) {
+                let joing2 = $(domstr);
+                let cards1 = joing1.find('.' + constobj.card);
+                let cards2 = joing2.find('.' + constobj.card);
+                const gids1 = cards1.toArray().map(c => $(c).attr('id'));
+                const gids2 = cards2.toArray().map(c => $(c).attr('id'));
+                // 移除timeout的game
+                cards1.each(function () {
+                    let c = $(this);
+                    if (!gids2.includes(c.attr('id'))) {
+                        c.remove();
+                    };
+                });
+                // 新增新的join game
+                cards2.each(function () {
+                    let c = $(this);
+                    if (!gids1.includes(c.attr('id'))) {
+                        joing1.append(c);
+                    };
+                });
+            } else if (cond2) {
+                joing1.html('');
+            };
+            //
+            wsgame.send(constobj.newgame); //==============
+            return true
+        };
+        // p1waiting
+        if (fname == constobj.p1waiting) {
+            const cond1 = domstr.includes(constobj.newgame) && domstr.includes(constobj.joingame);
+            const cond2 = domstr.includes(constobj.p12vs);
+            if (cond1 || cond2) {
+                // 畫面變化: 兩種
+                gotoIndex(setcookienull = cond1, go = false);
+                main.html(domstr);
+            } else {
+                // 畫面不變
+                let card = fchild.find('.' + constobj.card).eq(0);
+                const left = getLeft(card);
+                //
+                wsgame.send(constobj.p1waiting + constobj.at + I.gid + constobj.at + left); //==============
+            };
+            return true
+        };
+        //已經在對戰畫面
+        if (fname == constobj.p12vs) {
+            const cond1 = domstr.includes(constobj.newgame) && domstr.includes(constobj.joingame);
+            const cond2 = domstr.endsWith(constobj.histry_begin);
+            const cond3 = domstr.includes(constobj.winner);
+            if (cond1) {
+                // 畫面變化: 一種
+                gotoIndex(setcookienull = cond1, go = false);
+                main.html(domstr);
+            } else {
+                // 畫面不變: 更新histry或winner
+                let card = fchild.find('.' + constobj.card).eq(0);
+                const dmax = parseInt(card.attr('data-dmax'));
+                const left = getLeft(card);
+                if (cond2) {
+                    let hishistry = $('#hiscompare .histry').eq(0);
+                    if (hishistry.length == 1) {
+                        hishistry.html(domstr);
+                    };
+                } else if (cond3) {
+                    let histry = $('#compare .histry').eq(0);
+                    let hishistry = $('#hiscompare .histry').eq(0);
+                    const hisname = $('#hisname').text();
+                    const winner = domstr.replace(constobj.winner + ':', '');
+                    //
+                    if (winner == I.pname) {
+                        histry.prepend('<h3 style="color:blue">You WIN!</h3>');
+                        hishistry.prepend('<h3 style="color:red">' + hisname + ' LOSE!!!</h3>');
+                    } else {
+                        histry.prepend('<h3 style="color:red">You LOSE!!!</h3>');
+                        hishistry.prepend('<h3 style="color:blue">' + hisname + ' WIN!</h3>');
+                    };
+                    //
+                    if (left > constobj.durationMax_winner) {
+                        card.attr('data-dmax', dmax - (left - constobj.durationMax_winner));
+                    };
+                };
+                wsgame.send(constobj.p12vs + constobj.at + I.pid + constobj.at + left); //==============
+            };
+            return true
+        };
+    };
+    // #################################################
+    $(document).on('keyup', '.' + constobj.pname, function () {
+        this.value = this.value.replace(/[^a-zA-Z0-9]/g, '').toLowerCase(); //只留英數
+    });
+    $(document).on('keyup', '.' + constobj.ans, function () {
+        this.value = this.value.replace(/[^0-9]/g, ''); //只留數字
+        const lastW = this.value[this.value.length - 1];
+        const before = this.value.slice(0, -1);
+        if (before.includes(lastW)) {
+            this.value = before;
+        }
+    });
+    // 停止等待。停止遊戲
+    $(document).on('click', '.btn.stopwaiting,.btn.stopgame', function () {
+        papafadeout($(this));
+    });
+    //
+    $(document).on('click', '.btn.new,.btn.join', function () {
+        let that = $(this);
+        let card = that.parent().parent();
+        const pid = '';
+        const pname = card.find('.' + constobj.pname).eq(0).val();
+        const ans = card.find('.' + constobj.ans).eq(0).val();
+        const gid = card.attr('id');
+        //
+        if (pname == constobj.ai | pname == "" | ans == "") {
+            alert('暱稱或答案請勿空白! 暱稱也不能用ai');
+            return false;
+        };
+        if (ans.length < 4) {
+            alert('答案須為4位數字!');
+            return false;
+        };
+        //
+        status = constobj.newjoin;
+        init = { status, pid, pname, ans, gid, };
+        wsself.send(JSON.stringify(init));
+        //
+        document.getElementById("myAudio").play();
+    });
+    //對戰檢查答案
+    $(document).on('click', '.btn.checkans', function () {
+        let that = $(this);
+        let card = that.parent().parent();
+        const pid = I.pid;
+        const myguess = card.find('.' + constobj.ans).eq(0).val();
+        //
+        if (myguess == "") {
+            alert('答案請勿空白!');
+            return false;
+        };
+        if (myguess.length < 4) {
+            alert('答案須為4位數字!');
+            return false;
+        };
+        //
+        status = constobj.checkans;
+        winner = -1;
+        init = { status, pid, myguess, winner };
+        wsself.send(JSON.stringify(init));
+    });
+
+    //_________________________________________________________________-
+    updateI();
+    window.setInterval(updateAllCardsLeftSec, 1000);
+    
+</script>
+{% endif %}
+<!--  -->
+    <p style="text-align:center;display:none">
+        <audio id="myAudio" controls  autoplay >
+          <source src="/static/Debussy_Moonlight.mp3" type="audio/mpeg">
+          Your browser does not support the audio element.
+        </audio>
+    </p>
+</html>

@@ -1,0 +1,29 @@
+<html>
+<head>
+<style>
+</style>
+<!--      -->
+<link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+<script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+<py-env>
+- pandas
+- paths:
+  - /static/utils.py    
+</py-env>
+</head>
+
+<body>
+<p id='out'></p>
+<p><span id='out2' style="color:red"></span></p>
+<!--  -->
+<py-script  output="out">
+"&lt;span style=\"color:green;font-size:22\"&gt;222&lt;s\/span&gt;"
+</py-script>
+<!--  --> 
+<py-script output="out2">
+output = Element("py-script-target")
+output.write(222)
+</py-script>    
+<!--      -->
+</body>
+</html>

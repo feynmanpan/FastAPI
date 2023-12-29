@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>投影片備忘錄轉語音</title>
+    <!--  -->
+    <style>
+        body {
+            text-align: center;
+            font-family:"arial";
+        }
+        img {
+            width: 400px;
+            display:block;
+            margin: auto;
+            margin-top:20px;
+        }
+        label{
+            cursor: pointer;
+            border: 1px solid;
+            margin-right: 20px;            
+            padding: 4px;
+            padding-left: 10px;
+            padding-right: 10px;
+            background-color: darkcyan;
+            border-radius: 3px;
+            display: inline-block;
+            color: white;            
+        }
+        #input{
+            display: none;
+        }
+        #submit{
+
+        }
+        #DL {
+            display: none;
+        }
+
+        #status {
+            color: red;
+        }
+        input {
+            cursor: pointer;
+        }
+    </style>
+    <!--  -->
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js'
+        integrity='sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=='
+        crossorigin='anonymous'></script>
+</head>
+
+<body>
+    <h2>【投影片備忘錄轉語音】</h2>
+    <h4> .pptx 每頁想請google小姐念的旁白請寫在每頁的【備忘錄】，請勿上傳已含有音訊檔的pptx</h4>
+    <label for="input" class="btn">請選擇 pptx</label>
+    <input type="file" id="input" accept=".pptx">
+    <!--     -->
+    <input type="submit" value="上傳轉換" id="submit">
+    <span id='status'></span>
+    <a href="{{ url_for('static', path='/tts/') }}" download="" id="DL">
+        <input type="button" value="下載含旁白音訊檔的pptx">
+    </a>
+    <!--      -->
+    <img src="{{ url_for('static', path='/tts/tts_pptx.jpg') }}" alt="">
+    <!--  -->
+
+</body>
+<script>
+    let label = $("label")
+    let label_text = label.text();
+    let UL_file = $("#input");
+    let submit = $("#submit");
+    let DL = $('#DL')
+    let DL_href = DL.attr('href');
+    let status = $("#status");
+    // 
+    UL_file.change(function () {
+        status.text("");
+        DL.hide();
+        DL.attr("href", DL_href);
+        submit.show();
+        if (UL_file[0].files.length == 1) {
+            let fn = UL_file[0].files[0].name;
+            if(fn.split('.').pop()!='pptx'){
+                label.text(label_text);
+                UL_file.val("");
+                alert('請別上傳非pptx')
+            }else{
+                label.text(fn);
+            };
+        }else{
+            label.text(label_text);
+        };
+    })
+    // 
+    submit.click(function () {
+        if (UL_file[0].files.length == 0) {
+            alert("尚未選擇上傳檔案");
+        } else {
+            submit.hide();
+            DL.hide();
+            status.text("請等候Google小姐處理");
+            // 
+            var fd = new FormData();
+            var files = UL_file[0].files;
+            fd.append('file', files[0]);
+            // 
+            let init = {
+                url: '/tts/pptx_handle',
+                type: 'POST',
+                data: fd,
+                contentType: false,
+                processData: false,
+                mimeType: 'multipart/form-data',
+                dataType: 'json',
+                timeout: 60 * 20 * 1000,
+            }
+            $.ajax(init)
+                .done(function (res) {
+                    let success = res.success;
+                    if (success == 1) {
+                        let fn_out = res.fn_out;
+                        DL.attr("download", fn_out);
+                        DL.attr("href", DL_href + fn_out);
+                        DL.show();
+                        status.text("Google小姐念完了");
+                    } else {
+                        let err = res.err;
+                        status.text("後端處理失敗: " + err);
+                    };
+                })
+                .fail(function () {
+                    // alert('阿，壞了')
+                    status.text("阿，壞了");
+                })
+                .always(function () {
+                    // submit.show();
+                })
+                ;
+
+        };
+
+
+    });//click
+</script>
+
+</html>

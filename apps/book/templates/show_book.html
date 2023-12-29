@@ -1,0 +1,132 @@
+<html>
+
+<head>
+    <title>{{info.title}}</title>
+    <!--     <link href="{{ url_for('static', path='/test.css') }}" rel="stylesheet"> -->
+    <style>
+        /*starts*/
+        .star span {
+            /* display: inline-block; */
+            float: left;
+            line-height: 22px;
+        }
+
+        .star .stars {
+            width: 135px;
+        }
+
+        .star.star-s .stars:before,
+        .star.star-s .stars:after {
+            font-size: 14px;
+        }
+
+        .star.star-s .stars {
+            width: 80px;
+        }
+
+        .star.star-s .stars:before {
+            color: #d3d3d3;
+            content: '__________';
+        }
+
+        .star.star-s .type {
+            margin-left: 15px;
+        }
+
+        .stars {
+            position: relative;
+            /*display: block;*/
+            height: 22px;
+        }
+
+        .stars:before,
+        .stars:after {
+            font-family: "icon_01";
+            font-weight: normal;
+            font-style: normal;
+            display: inline-block;
+            font-size: 23px;
+            position: absolute;
+            left: 3px;
+            top: 0px;
+            letter-spacing: 0.15em;
+        }
+
+        .stars:after {
+            color: #ffac00;
+        }
+
+        .stars:before {
+            color: #d3d3d3;
+            content: '**********';
+        }
+
+        .stars.s0:after {
+            content: '';
+        }
+
+        .stars.s1:after {
+            content: '1';
+            font-weight: bold;
+        }
+
+        .stars.s2:after {
+            content: '12';
+            font-weight: bold;
+        }
+
+        .stars.s3:after {
+            content: '123';
+            font-weight: bold;
+        }
+
+        .stars.s4:after {
+            content: '1234';
+            font-weight: bold;
+        }
+
+        .stars.s5:after {
+            content: '12345';
+            font-weight: bold;
+        }
+
+        .stars.s6:after {
+            content: '123456';
+            font-weight: bold;
+        }
+
+        .stars.s7:after {
+            content: '1234567';
+            font-weight: bold;
+        }
+
+        .stars.s8:after {
+            content: '12345678';
+            font-weight: bold;
+        }
+
+        .stars.s9:after {
+            content: '123456789';
+            font-weight: bold;
+        }
+
+        .stars.s10:after {
+            content: '1234567890';
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <pre>
+{{res}}
+    </pre>
+    <div>
+        {{info.intro|safe}}
+    </div>
+    <div>
+        {{info.comment|safe}}
+    </div>
+</body>
+
+</html>
